@@ -1,137 +1,257 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Մասնագիտական կողմնորոշման թեստ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Մասնագիտական կողմնորոշման թեստ — Այո/Ոչ</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5 0%, #9face6 100%);
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root{
+      --bg-start: #f7f8fd;
+      --accent-1: #6c63ff;
+      --accent-2: #4dd0e1;
+      --accent-3: #ff8a65;
+      --card-bg: rgba(255,255,255,0.98);
+      --muted: #6b6b7a;
+      --glass: rgba(255,255,255,0.6);
     }
-    .container {
-      width: 100%;
-      max-width: 600px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      overflow: hidden;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    body{
+      background: linear-gradient(135deg,#fdfbfb 0%,#ebedff 100%);
+      display:flex;align-items:center;justify-content:center;padding:28px;
     }
-    .question-box, .result-box {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 30px;
-      text-align: center;
+
+    .frame{
+      width:100%;max-width:900px;background:var(--card-bg);border-radius:18px;box-shadow:0 18px 50px rgba(20,30,80,0.08);overflow:hidden;position:relative;
     }
-    .question-box.active {
-      display: flex;
+
+    header{padding:26px 32px;border-bottom:1px solid rgba(12,14,30,0.04);display:flex;align-items:center;gap:18px;background:linear-gradient(90deg,rgba(108,99,255,0.06),rgba(77,208,225,0.02));}
+    .title-box{flex:1}
+    h1{margin:0;font-size:20px;color:#111;padding:10px;border:2px solid rgba(12,14,30,0.06);border-radius:10px;display:inline-block;background:white}
+    p.lead{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    .stage{position:relative;min-height:520px;padding:36px;display:flex;align-items:center;justify-content:center}
+
+    .question-card{
+      width:100%;max-width:720px;background:linear-gradient(180deg,#ffffff, #fbfdff);border-radius:14px;padding:28px;box-shadow:0 12px 30px rgba(14,24,60,0.06);transition:transform .4s ease,opacity .35s ease;position:absolute;left:0;right:0;
     }
-    .result-box.active {
-      display: flex;
+    .question-card.hidden{opacity:0;transform:translateY(18px);pointer-events:none}
+
+    .q-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .q-meta{color:var(--muted);font-size:13px}
+    .q-text{font-size:22px;margin-top:12px;color:#111}
+
+    .yesno{display:flex;gap:18px;margin-top:26px}
+    .btn-yn{flex:1;padding:18px;border-radius:12px;border:3px solid transparent;font-weight:700;font-size:16px;cursor:pointer;transition:transform .12s ease,box-shadow .12s ease}
+    .btn-yn:hover{transform:translateY(-6px)}
+    .btn-yes{background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white;box-shadow:0 12px 30px rgba(108,99,255,0.12);border-color:rgba(255,255,255,0.12)}
+    .btn-no{background:linear-gradient(90deg,#f6f6f6,#ffffff);color:#333;border:2px dashed rgba(12,14,30,0.06)}
+
+    .nav{display:flex;align-items:center;justify-content:space-between;margin-top:22px}
+    .progress{flex:1;margin:0 18px;height:10px;background:rgba(12,14,30,0.06);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--accent-1),var(--accent-2))}
+
+    .result-card{padding:28px;border-radius:12px;background:linear-gradient(180deg,#fffefc,#f7f9ff);box-shadow:0 12px 30px rgba(14,24,60,0.06)}
+    .result-title{font-size:20px;margin:0}
+    .result-desc{color:var(--muted);margin-top:6px}
+
+    .top-list{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+    .top-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:10px;border:1px solid rgba(12,14,30,0.04);background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4))}
+    .pill{padding:8px 10px;border-radius:999px;font-weight:700}
+
+    footer{padding:18px 28px;border-top:1px solid rgba(12,14,30,0.04);display:flex;justify-content:space-between;align-items:center}
+
+    /* responsive */
+    @media (max-width:720px){
+      .question-card{padding:20px}
+      .yesno{flex-direction:column}
+      .btn-yn{width:100%}
+      .stage{padding:22px}
     }
-    .question {
-      background: #f4f6fb;
-      border: 2px solid #4a6cf7;
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0 30px;
-      width: 100%;
-      font-size: 18px;
-    }
-    button {
-      background: #4a6cf7;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 10px;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: #3958d4;
-    }
-    #resultText {
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-    }
+
   </style>
 </head>
 <body>
-  <div class="container">
-    <div id="q1" class="question-box active">
-      <div class="question">Քեզ դուր է գալիս վերլուծական խնդիրներ լուծել?</div>
-      <button onclick="nextQuestion('q1','IT')">Այո</button>
-      <button onclick="nextQuestion('q1','none')">Ոչ</button>
-    </div>
+  <div class="frame" role="application">
+    <header>
+      <div class="title-box">
+        <h1>Մասնագիտական կողմնորոշման թեստ</h1>
+        <p class="lead">Պատասխանի՛ր բոլոր հարցերին միայն «Այո» կամ «Ոչ» և ստացիր մինչև 3 տարբեր մասնագիտության առաջարկ</p>
+      </div>
+      <div style="text-align:right;color:var(--muted);font-size:13px">Step-by-step · Պարզ եւ արագ</div>
+    </header>
 
-    <div id="q2" class="question-box">
-      <div class="question">Սիրում ես նկարել կամ ստեղծագործել?</div>
-      <button onclick="nextQuestion('q2','Art')">Այո</button>
-      <button onclick="nextQuestion('q2','none')">Ոչ</button>
-    </div>
+    <main class="stage" id="stage">
+      <!-- question cards injected by JS -->
+    </main>
 
-    <div id="q3" class="question-box">
-      <div class="question">Հեշտությամբ ես շփվում մարդկանց հետ?</div>
-      <button onclick="nextQuestion('q3','Comm')">Այո</button>
-      <button onclick="nextQuestion('q3','none')">Ոչ</button>
-    </div>
-
-    <div id="result" class="result-box">
-      <div class="question" id="resultText"></div>
-      <button onclick="restartQuiz()">Կրկին փորձել</button>
-    </div>
+    <footer>
+      <div style="color:var(--muted);font-size:13px">Թեստի արդյունքը մոտավոր է և կրթական բնութագիր է՝ ոչ բուժական/իրավական խորհուրդ</div>
+      <div style="font-weight:700;color:var(--accent-1)">Դասընթաց — Եկեք սկսենք</div>
+    </footer>
   </div>
 
   <script>
-    let scores = { IT: 0, Art: 0, Comm: 0 };
+    // QUESTIONS (only yes/no). If yes -> add points for careers in the map.
+    const questions = [
+      {q:'Դու հաճույքով լուծում ես տրամաբանական խնդիրներ և ալգորիթմիկ մտածում պարունակում ենիս?', map:{IT:2, Engineering:1, Research:1}},
+      {q:'Դու սիրում ես ստեղծագործել (նկարչություն, դիզայն, երաժշտություն)?', map:{Art:3, Design:2, Media:1}},
+      {q:'Դու հաճույք ես ստանում մարդկանց օգնելուց և անմիջական շփումից?', map:{Healthcare:3, Teaching:2, SocialWork:1}},
+      {q:'Դու հրավայելային ես թվերի հետ աշխատել (տվյալներ, հաշվապահություն, ֆինանս)?', map:{Finance:3, DataScience:2, Business:1}},
+      {q:'Դու սիրում ես սարքեր/մեխանիկա/կառավարել սարքավորումներ?', map:{Engineering:3, IT:1, Agriculture:1}},
+      {q:'Դու պատրաստ ես երկար ուսումնառության և ակադեմիական հետազոտությունների?', map:{Research:3, Medicine:2, Science:2}},
+      {q:'Դու հաճույք ես ստանում մարդկանց առաջնորդելուց և թիմեր կազմակերպելուց?', map:{Business:3, Management:2, Teaching:1}},
+      {q:'Ուզո՞ւմ ես աշխատել լրատվական/կոմունիկացիոն դաշտում (լրագրություն, մարկետինգ)', map:{Media:3, Design:1, Business:1}},
+      {q:'Դու զգում ես, որ ցանկանում ես սեփական բիզնես սկսել կամ ձեռներեց լինել?', map:{Business:3, Finance:1}},
+      {q:'Դու սիրում ես դրսում ֆիզիկապես ակտիվ լինել կամ դաշտային աշխատանքներ կատարել?', map:{Agriculture:3, Engineering:1}},
+      {q:'Դու նախընտրում ես անկախ/ֆրիլանս աշխատանք', map:{Design:2, IT:2, Media:2}},
+      {q:'Դու արագ և հանգիստ որոշումներ կայացնել ես սիրում (օպերատիվ աշխատանքներ)?', map:{Healthcare:2, Business:1, IT:1}},
+      {q:'Դու վայելում ես նուրբ մանրաքանակային աշխատանք կամ լաբորատորիաներում փոքր բաներ անել', map:{Science:2, Medicine:2, Research:1}}
+    ];
 
-    function nextQuestion(current, category) {
-      if (category !== 'none') scores[category]++;
-      document.getElementById(current).classList.remove('active');
-      let next = document.getElementById(current).nextElementSibling;
-      if (next && next.classList.contains('question-box')) {
-        next.classList.add('active');
-      } else {
-        showResult();
+    const careers = {
+      IT:'ՏՏ / Ծրագրավորում', Engineering:'Ինժեներա-տեխնիկա', Design:'Դիզայն', Art:'Արվեստ', Media:'Մեդիա/Մարքեթինգ',
+      Healthcare:'Առողջապահություն', Teaching:'Ուսուցում', Finance:'Ֆինանսներ', DataScience:'Տվյալագիտություն',
+      Research:'Հետազոտություն', Business:'Բիզնես / Մենեջմենթ', Agriculture:'Ագրո/Դաշտային'
+    };
+
+    // state
+    let state = {idx:0, scores:{}};
+    Object.keys(careers).forEach(k=> state.scores[k]=0);
+
+    const stage = document.getElementById('stage');
+
+    function createQuestionCard(i){
+      const data = questions[i];
+      const card = document.createElement('section');
+      card.className = 'question-card';
+      card.dataset.index = i;
+      if(i !== 0) card.classList.add('hidden');
+
+      const inner = document.createElement('div');
+      inner.innerHTML = `
+        <div class='q-top'>
+          <div class='q-meta'>Հարց ${i+1} / ${questions.length}</div>
+          <div class='q-meta' id='hint-${i}'></div>
+        </div>
+        <div class='q-text'>${escapeHtml(data.q)}</div>
+        <div class='yesno'>
+          <button class='btn-yn btn-yes' id='yes-${i}'>Այո</button>
+          <button class='btn-yn btn-no' id='no-${i}'>Ոչ</button>
+        </div>
+        <div class='nav'>
+          <button class='btn-yn btn-no' style='width:120px' id='back-${i}'>Ուղղվել</button>
+          <div class='progress'><i style='width:${Math.round(i/questions.length*100)}%'></i></div>
+          <div style='width:120px;text-align:right'><button class='btn-yn btn-yes' id='skip-${i}'>Գնալ</button></div>
+        </div>
+      `;
+
+      card.appendChild(inner);
+
+      // handlers
+      setTimeout(()=>{
+        card.querySelector('#yes-'+i).addEventListener('click', ()=> handleAnswer(i,true));
+        card.querySelector('#no-'+i).addEventListener('click', ()=> handleAnswer(i,false));
+        card.querySelector('#back-'+i).addEventListener('click', ()=> showCard(Math.max(0,i-1)));
+        card.querySelector('#skip-'+i).addEventListener('click', ()=> showCard(i+1<questions.length?i+1:questions.length));
+      },0);
+
+      return card;
+    }
+
+    function renderAll(){
+      stage.innerHTML='';
+      for(let i=0;i<questions.length;i++){
+        stage.appendChild(createQuestionCard(i));
+      }
+      // result placeholder
+      const res = document.createElement('section');
+      res.className = 'question-card hidden';
+      res.id = 'resultCard';
+      res.innerHTML = `
+        <div class='result-card'>
+          <div style='display:flex;justify-content:space-between;align-items:center;gap:12px'>
+            <div>
+              <h3 class='result-title'>Ձեր ամենահամապատասխան մասնագիտությունները</h3>
+              <div class='result-desc'>Ահա TOP 3 առաջարկը ըստ ձեր պատասխանների</div>
+            </div>
+            <div style='text-align:right'><button class='btn-yn btn-yes' id='restartBtn'>Կրկնել թեստը</button></div>
+          </div>
+          <div id='topList' class='top-list'></div>
+        </div>
+      `;
+      stage.appendChild(res);
+      document.getElementById('restartBtn').addEventListener('click', restart);
+    }
+
+    function handleAnswer(i,ans){
+      // if yes -> add mapped points
+      if(ans){
+        const map = questions[i].map || {};
+        for(const k in map){ if(state.scores[k]===undefined) state.scores[k]=0; state.scores[k]+=map[k]; }
+      }
+      // store answer
+      state['ans'+i] = ans;
+      // go next
+      if(i+1 < questions.length) showCard(i+1);
+      else computeResults();
+    }
+
+    function showCard(i){
+      const cards = document.querySelectorAll('.question-card');
+      cards.forEach(c=> c.classList.add('hidden'));
+      if(i < cards.length) {
+        cards[i].classList.remove('hidden');
+        // update progress bar inside shown card
+        const prog = cards[i].querySelector('.progress > i');
+        if(prog) prog.style.width = (i/questions.length*100)+'%';
+        window.scrollTo({top:0,behavior:'smooth'});
       }
     }
 
-    function showResult() {
-      let maxScore = 0;
-      let best = '';
-      for (let field in scores) {
-        if (scores[field] > maxScore) {
-          maxScore = scores[field];
-          best = field;
-        }
-      }
-      let resultText = '';
-      if (best === 'IT') resultText = 'Քեզ համապատասխանում է ՏՏ / Ինժեներություն 🙂';
-      if (best === 'Art') resultText = 'Քեզ համապատասխանում է Արվեստ / Դիզայն 🎨';
-      if (best === 'Comm') resultText = 'Քեզ համապատասխանում է Մարդկային հարաբերություններ 👥';
-      if (best === '') resultText = 'Խնդրում ենք պատասխանել բոլոր հարցերին։';
+    function computeResults(){
+      // ensure all career keys exist
+      Object.keys(careers).forEach(k=> state.scores[k] = state.scores[k] || 0);
+      // make array
+      const arr = Object.entries(state.scores).map(([k,v])=>({key:k,score:v,name:careers[k]||k}));
+      arr.sort((a,b)=>b.score-a.score);
+      const total = arr.reduce((s,e)=>s+e.score,0) || 1;
+      const top3 = arr.slice(0,3).map(e=>({...e, pct: Math.round(e.score/total*100)}));
 
-      document.getElementById('resultText').innerText = resultText;
-      document.getElementById('result').classList.add('active');
+      // render top list
+      const topList = document.getElementById('topList');
+      topList.innerHTML='';
+      top3.forEach((t,idx)=>{
+        const el = document.createElement('div');
+        el.className='top-item';
+        el.innerHTML = `<div style='display:flex;align-items:center;gap:12px'><div class='pill' style='background:linear-gradient(90deg,var(--accent-1),var(--accent-2));color:white'>${idx+1}</div><div><div style='font-weight:700'>${escapeHtml(t.name)}</div><div style='color:var(--muted);font-size:13px'>Միավոր: ${t.score}</div></div></div><div style='text-align:right'><div style='font-weight:800'>${t.pct}%</div><div style='color:var(--muted);font-size:13px'>Համապատասխ.</div></div>`;
+        topList.appendChild(el);
+      });
+
+      // show result card
+      showResultCard();
     }
 
-    function restartQuiz() {
-      scores = { IT: 0, Art: 0, Comm: 0 };
-      document.querySelectorAll('.question-box').forEach(el => el.classList.remove('active'));
-      document.getElementById('q1').classList.add('active');
-      document.getElementById('result').classList.remove('active');
+    function showResultCard(){
+      document.querySelectorAll('.question-card').forEach(c=> c.classList.add('hidden'));
+      const res = document.getElementById('resultCard');
+      if(res) res.classList.remove('hidden');
+      window.scrollTo({top:0,behavior:'smooth'});
     }
+
+    function restart(){
+      state = {idx:0,scores:{}};Object.keys(careers).forEach(k=> state.scores[k]=0);
+      // remove any stored ans
+      for(let i=0;i<questions.length;i++) delete state['ans'+i];
+      renderAll();
+      showCard(0);
+    }
+
+    function escapeHtml(s){ return (s+'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // init
+    renderAll();
+    showCard(0);
   </script>
 </body>
 </html>
