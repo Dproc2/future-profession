@@ -1,0 +1,107 @@
+[ 17 сентября 2025 г. 10:26 ] ⁨Ա. ՄԱՆՈՒԿՅԱՆ⁩: <!DOCTYPE html>
+<html lang="hy">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Մասնագիտական կողմնորոշման թեստ</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #444;
+    }
+    .question {
+      margin: 15px 0;
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #result {
+      margin-top: 25px;
+      padding: 20px;
+      background: #e9ffe9;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Մասնագիտական կողմնորոշման թեստ</h1>
+
+  <form id="quizForm">
+    <div class="question">
+      <p>1․ Քեզ դուր է գալիս վերլուծական խնդիրներ լուծել?</p>
+      <label><input type="radio" name="q1" value="IT"> Այո</label><br>
+      <label><input type="radio" name="q1" value="none"> Ոչ</label>
+    </div>
+
+    <div class="question">
+      <p>2․ Սիրում ես նկարել կամ ստեղծագործել?</p>
+      <label><input type="radio" name="q2" value="Art"> Այո</label><br>
+      <label><input type="radio" name="q2" value="none"> Ոչ</label>
+    </div>
+
+    <div class="question">
+      <p>3․ Հեշտությամբ ես շփվում մարդկանց հետ?</p>
+      <label><input type="radio" name="q3" value="Comm"> Այո</label><br>
+      <label><input type="radio" name="q3" value="none"> Ոչ</label>
+    </div>
+
+    <button type="button" onclick="calculateResult()">Ավարտել թեստը</button>
+  </form>
+
+  <div id="result"></div>
+
+  <script>
+    function calculateResult() {
+      let scores = { IT: 0, Art: 0, Comm: 0 };
+      let form = document.forms['quizForm'];
+
+      for (let i = 1; i <= 3; i++) {
+        let answer = form['q' + i].value;
+        if (answer !== "none" && answer !== "") {
+          scores[answer]++;
+        }
+      }
+
+      let maxScore = 0;
+      let best = "";
+      for (let field in scores) {
+        if (scores[field] > maxScore) {
+          maxScore = scores[field];
+          best = field;
+        }
+      }
+
+      let resultText = "";
+      if (best === "IT") resultText = "Քեզ ամենից շատ համապատասխանում է ՏՏ/Ինժեներություն 🙂";
+      if (best === "Art") resultText = "Քեզ ամենից շատ համապատասխանում է Արվեստ/Դիզայն 🎨";
+      if (best === "Comm") resultText = "Քեզ ամենից շատ համապատասխանում է Մարդկային հարաբերություններ 👥";
+      if (best === "") resultText = "Խնդրում եմ նշիր բոլոր հարցերին պատասխանը։";
+
+      document.getElementById("result").innerText = resultText;
+    }
+  </script>
+
+</body>
+</html>
