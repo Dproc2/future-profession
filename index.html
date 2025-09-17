@@ -1,107 +1,467 @@
-[ 17 сентября 2025 г. 10:26 ] ⁨Ա. ՄԱՆՈՒԿՅԱՆ⁩: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hy">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Մասնագիտական կողմնորոշման թեստ</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Մասնագիտական կողմնորոշման թեստ — Գեղեցիկ տարբերակ</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f9;
-      color: #333;
-      padding: 20px;
+    :root{
+      --bg1: linear-gradient(135deg,#f6d365 0%,#fda085 100%);
+      --bg2: linear-gradient(135deg,#84fab0 0%,#8fd3f4 100%);
+      --card-bg: rgba(255,255,255,0.95);
+      --accent: #6c63ff;
+      --muted: #6b6b6b;
+      --shadow: 0 12px 30px rgba(16,24,40,0.12);
     }
-    h1 {
-      text-align: center;
-      color: #444;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;}
+    body{
+      background: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.15), transparent 10%),
+                  radial-gradient(circle at 90% 80%, rgba(255,255,255,0.08), transparent 15%),
+                  linear-gradient(180deg,#fff 0%, #f7fbff 100%);
+      display:flex;align-items:center;justify-content:center;padding:28px;
     }
-    .question {
-      margin: 15px 0;
-      padding: 15px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    .wrap{width:100%;max-width:880px}
+
+    header{display:flex;align-items:center;gap:18px;margin-bottom:18px}
+    .logo{
+      width:64px;height:64px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:white;font-size:22px;box-shadow:var(--shadow);
+      background:linear-gradient(135deg,#ff7a7a,#ffb37a);
     }
-    button {
-      background: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 20px;
+    h1{margin:0;font-size:20px;color:#222}
+    p.lead{margin:4px 0 0;color:var(--muted)}
+
+    /* card (question) */
+    .stage{position:relative;min-height:520px}
+    .card{
+      background:var(--card-bg);
+      border-radius:16px;padding:28px;box-shadow:var(--shadow);
+      display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:18px;
+      transition:transform .45s cubic-bezier(.22,.9,.32,1),opacity .35s ease;
+      position:absolute;left:0;right:0;top:0;
     }
-    button:hover {
-      background: #45a049;
+    .card.hidden{opacity:0;transform:translateY(20px);pointer-events:none}
+
+    .question-title{font-size:22px;margin:0;color:#0b1221}
+    .question-num{font-size:13px;color:var(--muted)}
+
+    .options{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}
+    .option{
+      background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.3));
+      border-radius:12px;padding:14px;border:2px solid rgba(12,14,30,0.06);cursor:pointer;display:flex;gap:10px;align-items:center;
+      transition:transform .12s ease,box-shadow .12s ease,background .18s ease;
+      box-shadow:0 6px 14px rgba(20,30,80,0.04);
+      min-height:64px;
     }
-    #result {
-      margin-top: 25px;
-      padding: 20px;
-      background: #e9ffe9;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: bold;
+    .option:hover{transform:translateY(-4px);box-shadow:0 14px 40px rgba(28,40,120,0.08)}
+    .option .label{font-weight:600}
+    .option .desc{font-size:13px;color:var(--muted)}
+
+    .footer{display:flex;align-items:center;justify-content:space-between;margin-top:6px}
+    .btn{
+      border:none;padding:12px 18px;border-radius:10px;background:var(--accent);color:white;font-weight:600;cursor:pointer;box-shadow:0 8px 24px rgba(108,99,255,0.18);
     }
+    .btn.ghost{background:transparent;color:var(--muted);box-shadow:none;border:1px solid rgba(12,14,30,0.06)}
+
+    .progress-wrap{flex:1;margin-left:14px;margin-right:14px}
+    .progress{height:10px;background:linear-gradient(90deg, rgba(12,14,30,0.06), rgba(12,14,30,0.04));border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#6c63ff,#4dd0e1)}
+
+    /* final result card */
+    .result-card{display:grid;grid-template-columns:1fr 320px;gap:18px;align-items:start}
+    .result-main{padding:22px;border-radius:12px;background:linear-gradient(180deg,#ffffff, #f8fbff);box-shadow:var(--shadow)}
+    .result-list{padding:18px;border-radius:12px;background:linear-gradient(180deg,#fff8f1,#fff);box-shadow:var(--shadow)}
+
+    .career-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px dashed rgba(12,14,30,0.04)}
+    .career-row:last-child{border-bottom:none}
+    .percent{font-weight:700}
+
+    /* responsive */
+    @media (max-width:880px){
+      .result-card{grid-template-columns:1fr}
+      .options{grid-template-columns:1fr}
+      .wrap{padding:0 8px}
+      .stage{min-height:640px}
+    }
+
+    /* colorful accent decorations */
+    .decor-top{position:absolute;right:-80px;top:-80px;width:240px;height:240px;border-radius:48px;background:var(--bg1);filter:blur(18px);opacity:0.9}
+    .decor-bottom{position:absolute;left:-80px;bottom:-80px;width:200px;height:200px;border-radius:48px;background:var(--bg2);filter:blur(18px);opacity:0.9}
+
+    /* animations */
+    .fade-in{animation:fadeIn .45s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <header>
+      <div class="logo">Մ</div>
+      <div>
+        <h1>Մասնագիտական կողմնորոշման թեստ</h1>
+        <p class="lead">Սկանավորիր, ընտրիր և պարզիր որ մասնագիտությունն է քեզ առավելագույնս համապատասխանում</p>
+      </div>
+    </header>
 
-  <h1>Մասնագիտական կողմնորոշման թեստ</h1>
+    <div class="stage" id="stage">
+      <div class="decor-top"></div>
+      <div class="decor-bottom"></div>
 
-  <form id="quizForm">
-    <div class="question">
-      <p>1․ Քեզ դուր է գալիս վերլուծական խնդիրներ լուծել?</p>
-      <label><input type="radio" name="q1" value="IT"> Այո</label><br>
-      <label><input type="radio" name="q1" value="none"> Ոչ</label>
+      <!-- cards will be injected here -->
     </div>
 
-    <div class="question">
-      <p>2․ Սիրում ես նկարել կամ ստեղծագործել?</p>
-      <label><input type="radio" name="q2" value="Art"> Այո</label><br>
-      <label><input type="radio" name="q2" value="none"> Ոչ</label>
-    </div>
-
-    <div class="question">
-      <p>3․ Հեշտությամբ ես շփվում մարդկանց հետ?</p>
-      <label><input type="radio" name="q3" value="Comm"> Այո</label><br>
-      <label><input type="radio" name="q3" value="none"> Ոչ</label>
-    </div>
-
-    <button type="button" onclick="calculateResult()">Ավարտել թեստը</button>
-  </form>
-
-  <div id="result"></div>
+    <div style="height:18px"></div>
+    <small style="color:var(--muted)">Դասավորությունը հիմնված է քո պատասխանների միավորների վրա։ Միգուցե խորհուրդ կտա նաև տեղափոխվել մասնագիտական խորհրդատվողի մոտ՝ մանրամասնության համար։</small>
+  </div>
 
   <script>
-    function calculateResult() {
-      let scores = { IT: 0, Art: 0, Comm: 0 };
-      let form = document.forms['quizForm'];
-
-      for (let i = 1; i <= 3; i++) {
-        let answer = form['q' + i].value;
-        if (answer !== "none" && answer !== "") {
-          scores[answer]++;
-        }
+    // Questions array. Each option maps points to career keys.
+    const questions = [
+      {
+        q: 'Դու ինչքան հաճախ ես սիրում լուծել տրամաբանական/գործնական խնդիրներ?',
+        options: [
+          {label: 'Շատ հաճախ', desc: 'Սիրում եմ բարդ մտածել', map: {IT:2, Engineering:2, Science:1}},
+          {label: 'Ժամանակ առ ժամանակ', desc: 'Սպասեք—ես նույնպես', map: {Business:1, IT:1}},
+          {label: 'Պաշտոնապես ոչ', desc: 'Ընտրում եմ այլ բաներ', map: {Art:2, Media:1}},
+          {label: 'Սիրում եմ աշխատել մարդկանց հետ', desc: 'Թիմային և մարդկանց ծառայող', map: {Teaching:2, Healthcare:1}}
+        ]
+      },
+      {
+        q: 'Դու կուզե՞ս ստեղծել նոր բան (արտադրանք, հավելված, արվեստային գործ)',
+        options: [
+          {label: 'Ո՛չ, նախընտրում եմ մոտեցում հստակ կանոններով', desc:'', map:{Engineering:2, Finance:1}},
+          {label: 'Այո՝ տեխնոլոգիաներով', desc:'Ծրագրավորում, հավելվածներ', map:{IT:3, Engineering:1}},
+          {label: 'Այո՝ ստեղծագործական', desc:'Դիզայն, արվեստ', map:{Art:3, Design:2}},
+          {label: 'Այո՝ բիզնես գաղափարներ', desc:'Սկսել սեփական բիզնես', map:{Business:3, Finance:1}}
+        ]
+      },
+      {
+        q: 'Ինչի մեջ քեզ ավելի հարմար ես զգում՝ գլուխգործոցներ մտածել ու վերլուծություններ անել, թե՞ մարդկանց առաջնորդել?',
+        options:[
+          {label:'Վերլուծություններ անել', desc:'Ծանր վերլուծական աշխատանք', map:{Science:2, IT:1, Finance:2}},
+          {label:'Մարդկանց առաջնորդել', desc:'Թիմ-մենեջմենթ', map:{Business:3, Teaching:1}},
+          {label:'Ստեղծագործել', desc:'Արվեստ, դիզայն', map:{Art:2, Design:2}},
+          {label:'Փորձել ու կիրառել պրակտիկ լուծումներ', desc:'Մեխանիկա, ինժեներություն', map:{Engineering:2, Agriculture:1}}
+        ]
+      },
+      {
+        q: 'Դու սիրո՞ւմ ես մարդկանց օգնել անմիջապես (օրինակ՝ բուժքույրություն, ուսուցում)',
+        options:[
+          {label:'Այո՝ շատ', desc:'Մարդկանց հետ անմիջական աշխատանք', map:{Healthcare:3, Teaching:2}},
+          {label:'Մինչև որոշ սահման', desc:'Ի դեպ, պետք է հավասարակշռություն', map:{Business:1, Healthcare:1}},
+          {label:'Չեմ նախընտրում', desc:'', map:{IT:1, Finance:1}},
+          {label:'Չգիտեմ', desc:'', map:{IT:1, Business:1}}
+        ]
+      },
+      {
+        q: 'Դու հետաքրքրվու՞մ ես արվեստով/կրեատիվ ոլորտով',
+        options:[
+          {label:'Այո՝ նկարչություն/դիզայն', desc:'Երջանիկ եմ երբ ստեղծում եմ', map:{Art:3, Design:2}},
+          {label:'Այո՝ երաժշտություն/թատրոն', desc:'Արվեստի տարբեր ճյուղեր', map:{Art:3, Media:1}},
+          {label:'Ոչ, ընտրյալ այլ ոլորտներ', desc:'', map:{Engineering:1, IT:1}},
+          {label:'Մի քիչ', desc:'', map:{Design:1, Media:1}}
+        ]
+      },
+      {
+        q: 'Դու սիրում ես աշխատել սեղանի մոտ՝ տվյալների ու աղյուսակների հետ?',
+        options:[
+          {label:'Այո՝ վերլուծություններ ինձ հետաքրքրում են', desc:'', map:{Finance:3, IT:1}},
+          {label:'Մի քիչ', desc:'', map:{Business:2, IT:1}},
+          {label:'Ոչ՝ նախընտրում եմ շարժուն աշխատանք', desc:'', map:{Healthcare:1, Agriculture:1}},
+          {label:'Չեմ սիրում', desc:'', map:{Art:1, Media:1}}
+        ]
+      },
+      {
+        q: 'Դու պատրաստ ե՞ս երկար ժամանակ սովորել և ստանալ մասնագիտական կրթություն',
+        options:[
+          {label:'Այո՝ մեծ ջանք, մեծ recompensa', desc:'', map:{Science:2, Medicine:3, Engineering:2}},
+          {label:'Այո՝ միջին չափով', desc:'', map:{IT:2, Business:1}},
+          {label:'Ոչ՝ ուզում եմ արագ սկսել աշխատել', desc:'', map:{Business:2, Media:1}},
+          {label:'Եթե դա հետաքրքիր է՝ հա', desc:'', map:{Design:1, Art:1}}
+        ]
+      },
+      {
+        q: 'Դու քո ժամանակի մեծ մասը սիրում ե՞ս ազատ աշխատանք անել/ֆրիլանս',
+        options:[
+          {label:'Այո՝ անկախություն', desc:'', map:{Design:2, IT:2, Media:2}},
+          {label:'Ոչ՝ նախընտրում եմ կայուն աշխատանք', desc:'', map:{Finance:2, Teaching:2}},
+          {label:'Կախված կլինի դաշտից', desc:'', map:{Business:1, Agriculture:1}},
+          {label:'Չեմ մտածել', desc:'', map:{IT:1}}
+        ]
+      },
+      {
+        q: 'Դու նախընտրու՞մ ես թիմային, թե՝ ինքնուրույն աշխատանք',
+        options:[
+          {label:'Թիմային', desc:'', map:{Business:2, Teaching:2, Healthcare:2}},
+          {label:'Միայնակ', desc:'', map:{IT:2, Research:2, Art:1}},
+          {label:'Մեթ թե մեկը, թե հինը', desc:'', map:{Engineering:1, Design:1}},
+          {label:'Կախված է նախագծից', desc:'', map:{Media:1, Business:1}}
+        ]
+      },
+      {
+        q: 'Դու սիրում ես ֆիզիկապես ակտիվ լինել (եռալ, լաբորատորիաներում աշխատել, դաշտում լինել)',
+        options:[
+          {label:'Այո՝ շատ ակտիվ', desc:'', map:{Agriculture:3, Engineering:1}},
+          {label:'Միջին', desc:'', map:{Healthcare:1, Engineering:1}},
+          {label:'Ոչ՝ նստած աշխատանք', desc:'', map:{IT:2, Finance:1}},
+          {label:'Սեփական հոբբի է', desc:'', map:{Art:1}}
+        ]
+      },
+      {
+        q: 'Վերջում՝ ինչի համար հատկապես ցուցաբերե՞ք առավելագույն եռանդը՝ փող վաստակելու, մարդկանց օգնելու, ստեղծագործելու, թե՞ տեխնիկական առաջընթացի համար?',
+        options:[
+          {label:'Փող', desc:'', map:{Finance:3, Business:2}},
+          {label:'Մարդկանց օգնել', desc:'', map:{Healthcare:3, Teaching:2}},
+          {label:'Ստեղծագործելը', desc:'', map:{Art:3, Design:2}},
+          {label:'Տեխնիկապես զարգանալ', desc:'', map:{IT:3, Engineering:2}}
+        ]
       }
+    ];
 
-      let maxScore = 0;
-      let best = "";
-      for (let field in scores) {
-        if (scores[field] > maxScore) {
-          maxScore = scores[field];
-          best = field;
-        }
-      }
+    // Initialize career keys (include ones referenced above)
+    const careers = {
+      IT: {name:'ՏՏ / Ծրագրավորում', color:'#6c63ff'},
+      Engineering: {name:'Ինժեներական ուղղություններ', color:'#ff7a7a'},
+      Science: {name:'Գիտություն / Հետազոտություն', color:'#4dd0e1'},
+      Art: {name:'Արվեստ / Ստեղծագործական', color:'#ffb37a'},
+      Design: {name:'Դիզայն', color:'#9b8cff'},
+      Business: {name:'Բիզնես / Մենեջմենթ', color:'#6cd37c'},
+      Finance: {name:'Ֆինանսներ / Տվյալներ', color:'#f6b26b'},
+      Teaching: {name:'Ուսուցում / Հոգատարություն', color:'#7da6ff'},
+      Healthcare: {name:'Բժշկություն / Առողջապահություն', color:'#ff9dbd'},
+      Media: {name:'Մեդիա / ԶԼՄ', color:'#f59ee0'},
+      Agriculture: {name:'Ձվարարական / Ագրո', color:'#8bd08b'},
+      Research: {name:'Հետազոտություն', color:'#87d1ff'},
+      Medicine: {name:'Բժշկություն', color:'#ff8383'}
+    };
 
-      let resultText = "";
-      if (best === "IT") resultText = "Քեզ ամենից շատ համապատասխանում է ՏՏ/Ինժեներություն 🙂";
-      if (best === "Art") resultText = "Քեզ ամենից շատ համապատասխանում է Արվեստ/Դիզայն 🎨";
-      if (best === "Comm") resultText = "Քեզ ամենից շատ համապատասխանում է Մարդկային հարաբերություններ 👥";
-      if (best === "") resultText = "Խնդրում եմ նշիր բոլոր հարցերին պատասխանը։";
+    // State
+    let state = { idx:0, answers:[], scores: {} };
+    Object.keys(careers).forEach(k=> state.scores[k]=0);
 
-      document.getElementById("result").innerText = resultText;
+    const stage = document.getElementById('stage');
+
+    function createCard(i){
+      const data = questions[i];
+      const card = document.createElement('article');
+      card.className = 'card fade-in';
+      card.dataset.index = i;
+
+      card.innerHTML = `
+        <div>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+            <div>
+              <div class="question-num">Հարց ${i+1} / ${questions.length}</div>
+              <h2 class="question-title">${escapeHtml(data.q)}</h2>
+            </div>
+            <div style="width:150px;text-align:right">
+              <div style="font-size:13px;color:var(--muted)">Ներդաշնակություն</div>
+              <div style="height:38px"></div>
+            </div>
+          </div>
+
+          <div class="options" style="margin-top:20px">
+          </div>
+        </div>
+
+        <div class="footer">
+          <button class="btn ghost" type="button" onclick="prev()">Վերադառնալ</button>
+          <div class="progress-wrap"><div class="progress"><i style="width:${Math.round((i)/questions.length*100)}%"></i></div></div>
+          <button class="btn" type="button" onclick="nextFromCard(${i})">Անցնել</button>
+        </div>
+      `;
+
+      // populate options
+      const optsWrap = card.querySelector('.options');
+      data.options.forEach((opt, j)=>{
+        const el = document.createElement('button');
+        el.className = 'option';
+        el.type = 'button';
+        el.innerHTML = `<div style="flex:1"><div class='label'>${escapeHtml(opt.label)}</div><div class='desc'>${escapeHtml(opt.desc)}</div></div>`;
+        el.onclick = ()=> selectOption(i,j,el,opt.map);
+        optsWrap.appendChild(el);
+      });
+
+      return card;
     }
-  </script>
 
+    function renderAll(){
+      stage.innerHTML='';
+      for(let i=0;i<questions.length;i++){
+        const c = createCard(i);
+        if(i!==0) c.classList.add('hidden');
+        stage.appendChild(c);
+      }
+    }
+
+    function selectOption(qIdx,optIdx,el,map){
+      // mark selected visually
+      const card = el.closest('.card');
+      card.querySelectorAll('.option').forEach(o=> o.style.outline='none');
+      el.style.outline = '4px solid rgba(108,99,255,0.12)';
+      el.style.boxShadow = '0 24px 48px rgba(108,99,255,0.09)';
+
+      // store answer
+      state.answers[qIdx] = optIdx;
+      state.selectedMap = state.selectedMap || {};
+      state.selectedMap[qIdx] = map;
+
+      // enable next button visually
+      const nextBtn = card.querySelector('.btn:not(.ghost)');
+      nextBtn.disabled = false;
+    }
+
+    function nextFromCard(i){
+      // check if answer selected
+      if(state.answers[i]===undefined){
+        flashMessage('Խնդրում ենք ընտրել պատասխան՝ շարունակելու համար');
+        return;
+      }
+      if(i < questions.length-1){
+        showCard(i+1);
+      } else {
+        // finished
+        computeResults();
+      }
+    }
+
+    function prev(){
+      const visibleIndex = +document.querySelector('.card:not(.hidden)').dataset.index;
+      if(visibleIndex>0) showCard(visibleIndex-1);
+    }
+
+    function showCard(i){
+      document.querySelectorAll('.card').forEach(c=>{
+        if(+c.dataset.index===i){ c.classList.remove('hidden'); c.classList.add('fade-in'); }
+        else c.classList.add('hidden');
+      });
+      updateProgress(i);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function updateProgress(i){
+      const el = document.querySelector('.progress > i');
+      if(el) el.style.width = (i/questions.length*100)+'%';
+    }
+
+    function computeResults(){
+      // reset scores
+      Object.keys(state.scores).forEach(k=> state.scores[k]=0);
+      // sum maps
+      Object.keys(state.selectedMap || {}).forEach(qi=>{
+        const map = state.selectedMap[qi];
+        for(const k in map) state.scores[k] += map[k];
+      });
+
+      // compute top 3
+      const entries = Object.entries(state.scores).map(([k,v])=>({key:k,score:v,name:careers[k]?.name||k,color:careers[k]?.color||'#ddd'}));
+      entries.sort((a,b)=>b.score-a.score);
+      const top = entries.slice(0,6); // show top 6 in detail
+
+      // compute percentages relative to sum of top scores
+      const total = top.reduce((s,e)=>s+e.score,0) || 1;
+      const topWithPct = top.map(e=>({...e, pct: Math.round((e.score/total)*100)}));
+
+      showResult(topWithPct, entries);
+    }
+
+    function showResult(topList, allEntries){
+      // build result card
+      const resultCard = document.createElement('article');
+      resultCard.className='card';
+      resultCard.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:18px">
+          <div>
+            <div class="question-num">Արդյունք</div>
+            <h2 class="question-title">Ձեր լավագույն համապատասխանությունները</h2>
+            <p style="color:var(--muted);margin-top:6px">Ահա TOP արդյունքները՝ ըստ քո պատասխանների</p>
+          </div>
+          <div style="text-align:right">
+            <button class="btn" onclick="restart()">Կատարել նոր փորձ</button>
+          </div>
+        </div>
+
+        <div style="margin-top:18px" class="result-card">
+          <div class="result-main">
+            <div style="font-size:15px;color:var(--muted)">Տեսակավորում</div>
+            <h3 style="margin:6px 0 12px">Top 3 շնորհքով — Ձեր ծառայելի թեքումներն են</h3>
+
+            <div id="top3" style="display:flex;flex-direction:column;gap:12px"></div>
+
+            <div style="margin-top:18px;padding:14px;border-radius:10px;background:linear-gradient(90deg,rgba(108,99,255,0.08),rgba(77,208,225,0.06))">
+              <div style="font-weight:700">Խնդրում ենք նկատի ունեք</div>
+              <div style="color:var(--muted);font-size:13px;margin-top:6px">Թեստը տրամաբանական ցուցիչ է. խորհուրդներն ընդհանուր բնույթի են։</div>
+            </div>
+          </div>
+
+          <aside class="result-list">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><strong>Բոլոր համապատասխանությունները</strong><div style="color:var(--muted);font-size:13px">(ռանկ)</div></div>
+            <div id="allList" style="display:flex;flex-direction:column;gap:8px;max-height:360px;overflow:auto;padding-right:6px"></div>
+          </aside>
+        </div>
+      `;
+
+      // populate top3
+      const top3wrap = resultCard.querySelector('#top3');
+      topList.slice(0,3).forEach((t,idx)=>{
+        const el = document.createElement('div');
+        el.style.display='flex';el.style.alignItems='center';el.style.justifyContent='space-between';el.style.gap='12px';
+        el.innerHTML = `
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:56px;height:56px;border-radius:12px;display:grid;place-items:center;color:white;font-weight:700;background:${t.color};font-size:14px">${idx+1}</div>
+            <div>
+              <div style="font-weight:700">${escapeHtml(t.name)}</div>
+              <div style="color:var(--muted);font-size:13px">Միավոր: ${t.score}</div>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-weight:800;font-size:18px">${t.pct}%</div>
+            <div style="color:var(--muted);font-size:12px">համապատասխանություն</div>
+          </div>
+        `;
+        top3wrap.appendChild(el);
+      });
+
+      // populate all list
+      const allList = resultCard.querySelector('#allList');
+      allEntries.forEach((e, rank)=>{
+        const row = document.createElement('div');
+        row.className='career-row';
+        const colorBox = `<div style="width:12px;height:12px;border-radius:3px;background:${e.color};margin-right:8px"></div>`;
+        row.innerHTML = `<div style="display:flex;align-items:center"><div style='display:flex;align-items:center'>${colorBox}<div style='font-weight:700'>${escapeHtml(careers[e.key]?.name||e.key)}</div></div></div><div style='color:var(--muted)'>${e.score} pts</div>`;
+        allList.appendChild(row);
+      });
+
+      // hide existing cards and show result
+      document.querySelectorAll('.card').forEach(c=> c.remove());
+      stage.appendChild(resultCard);
+      window.scrollTo({top:0,behavior:'smooth'});
+    }
+
+    function restart(){
+      state = { idx:0, answers:[], scores:{}, selectedMap:{} };
+      Object.keys(careers).forEach(k=> state.scores[k]=0);
+      renderAll();
+      showCard(0);
+    }
+
+    function flashMessage(txt){
+      alert(txt);
+    }
+
+    // simple escape
+    function escapeHtml(s){ return (s+'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+    // initial render
+    renderAll();
+    showCard(0);
+
+    // expose some functions globally for inline onclick usage
+    window.nextFromCard = nextFromCard;
+    window.prev = prev;
+    window.restart = restart;
+
+  </script>
 </body>
 </html>
