@@ -20,6 +20,8 @@
 --progressbg:#334155;
 --yes:#22c55e;
 --no:#ef4444;
+--bar-bg:#334155;
+--bar:#38bdf8;
 }
 
 .light{
@@ -30,6 +32,8 @@
 --progressbg:#cbd5e1;
 --yes:#16a34a;
 --no:#dc2626;
+--bar-bg:#cbd5e1;
+--bar:#2563eb;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
@@ -137,14 +141,52 @@ transition:0.2s;
 
 .result-container{
 display:none;
+width:100%;
+max-width:700px;
+margin-top:30px;
 text-align:center;
-margin-top:20px;
 }
 
-.result-container p{
-margin:15px 0;
-font-size:18px;
-white-space:pre-line;
+.bar-wrapper{
+margin:10px 0;
+background:var(--bar-bg);
+border-radius:12px;
+overflow:hidden;
+height:30px;
+position:relative;
+}
+
+.bar{
+height:100%;
+width:0;
+background:var(--bar);
+border-radius:12px;
+transition:width 1s ease;
+position:absolute;
+left:0; top:0;
+display:flex;
+align-items:center;
+justify-content:right;
+padding-right:10px;
+font-weight:700;
+color:white;
+font-size:16px;
+}
+
+.bar-label{
+position:absolute;
+left:15px;
+top:50%;
+transform:translateY(-50%);
+font-weight:600;
+color:var(--text);
+}
+
+.info-line{
+margin-top:40px;
+font-size:20px;
+font-weight:700;
+color:var(--accent);
 }
 
 footer{
@@ -154,21 +196,11 @@ font-size:16px;
 opacity:0.8;
 }
 
-.share-btn{
-margin-top:15px;
-padding:10px 18px;
-border-radius:8px;
-border:none;
-cursor:pointer;
-background:var(--accent);
-color:white;
-font-weight:600;
-}
-
 @media (max-width:720px){
 .stage{min-height:400px;}
 .btn-yn{padding:14px;font-size:15px;}
 .q-text{font-size:20px;}
+.bar{font-size:14px;padding-right:8px;}
 }
 </style>
 </head>
@@ -185,10 +217,8 @@ font-weight:600;
 <div class="stage" id="stage"></div>
 
 <div class="result-container" id="resultContainer">
-<p id="resultText"></p>
-<button class="share-btn" onclick="shareResult()">Կիսել արդյունքը</button>
-<button class="share-btn" onclick="resetTest()">Կրկնել թեստը</button>
-<p>Թեստի արդյունքը մոտավոր է և կրում է կրթական բնույթ</p>
+<div id="barsContainer"></div>
+<div class="info-line">Թեստի արդյունքը մոտավոր է և կրում է կրթական բնույթ</div>
 </div>
 
 <footer>
@@ -207,13 +237,24 @@ const questions=[
 {q:'Կուզե՞ս ղեկավարել մարդկանց և թիմեր', map:{Business:3,Management:2,Teaching:1}},
 {q:'Կուզե՞ս աշխատել լրատվության/մեդիայի ոլորտում', map:{Media:3,Design:1,Business:1}},
 {q:'Ցանկանու՞մ ես սեփական բիզնես սկսել', map:{Business:3,Finance:1}},
-{q:'Սիրու՞մ ես դրսում ակտիվ աշխատանքներ կատարել', map:{Agriculture:3,Engineering:1}}
+{q:'Սիրու՞մ ես դրսում ակտիվ աշխատանքներ կատարել', map:{Agriculture:3,Engineering:1}},
+{q:'Դու հաճույքով կարդացե՞ս գիտական հոդվածներ', map:{Research:2,Teaching:1,Science:3}},
+{q:'Սիրու՞մ ես գրաֆիկա կամ վեբ դիզայն ստեղծել', map:{Design:3,Art:2,Media:1}},
+{q:'Դու սիրում ես մարդկանց հետ թիմային աշխատանք', map:{Management:2,Teaching:1,Business:1}},
+{q:'Թվային վերլուծությունը քեզ հետաքրքրում է', map:{DataScience:3,Finance:2,IT:1}},
+{q:'Դու նախընտրում ես բացօթյա աշխատանք', map:{Agriculture:2,Engineering:1,Healthcare:1}},
+{q:'Դու հետաքրքրված ես ֆինանսների և տնտեսության ոլորտում', map:{Finance:3,Business:2,DataScience:1}},
+{q:'Դու կցանկանայիր ղեկավարել նախագծեր և թիմեր', map:{Management:3,Business:2,IT:1}},
+{q:'Դու սիրում ես մեքենաներով և տեխնոլոգիաներով զբաղվել', map:{Engineering:3,IT:2}},
+{q:'Դու հաճույքով կօգնե՞ս մարդկանց առողջության պահպանման հարցերում', map:{Healthcare:3,Medicine:2,SocialWork:1}},
+{q:'Դու կցանկանայիր ստեղծել սեփական արվեստի կամ կրեատիվ նախագիծ', map:{Art:3,Design:2,Media:1}}
 ];
 
 const careers={
 IT:'ՏՏ / Ծրագրավորում',Engineering:'Ինժեներա-տեխնիկա',Design:'Դիզայն',Art:'Արվեստ',Media:'Մեդիա/Մարքեթինգ',
 Healthcare:'Առողջապահություն',Teaching:'Ուսուցում',Finance:'Ֆինանսներ',DataScience:'Տվյալագիտություն',
-Research:'Հետազոտություն',Business:'Բիզնես / Մենեջմենթ',Agriculture:'Գյուղատնտեսություն',Management:'Մենեջմենթ',SocialWork:'Սոցիալական աշխատանք',Medicine:'Բժշկություն'
+Research:'Հետազոտություն',Business:'Բիզնես / Մենեջմենթ',Agriculture:'Գյուղատնտեսություն',Management:'Մենեջմենթ',
+SocialWork:'Սոցիալական աշխատանք',Medicine:'Բժշկություն',Science:'Գիտություն'
 };
 
 let state={scores:{}};
@@ -259,9 +300,23 @@ function showResults(){
 let arr=Object.entries(state.scores).map(([k,v])=>({k,v,name:careers[k]}));
 arr.sort((a,b)=>b.v-a.v);
 let top=arr.slice(0,3);
-let text='Ձեր ամենահամապատասխան մասնագիտությունները՝\n';
-top.forEach((t,i)=>{text+=`${i+1}. ${t.name}\n`;});
-document.getElementById('resultText').innerText=text;
+const barsContainer=document.getElementById('barsContainer');
+barsContainer.innerHTML='';
+top.forEach(t=>{
+const wrapper=document.createElement('div');
+wrapper.className='bar-wrapper';
+const bar=document.createElement('div');
+bar.className='bar';
+bar.style.width='0';
+bar.innerText=t.v;
+const label=document.createElement('div');
+label.className='bar-label';
+label.innerText=t.name;
+wrapper.appendChild(label);
+wrapper.appendChild(bar);
+barsContainer.appendChild(wrapper);
+setTimeout(()=>{bar.style.width=(t.v*20)+'%';},50);
+});
 stage.style.display='none';
 document.getElementById('resultContainer').style.display='block';
 }
@@ -278,11 +333,6 @@ window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function toggleMode(){document.body.classList.toggle('light');}
-
-function shareResult(){
-const text=document.getElementById('resultText').innerText;
-navigator.clipboard.writeText(text).then(()=>alert('Արդյունքը պատճենվեց clipboard–ում, կարող եք կիսել:'));
-}
 
 render();
 </script>
