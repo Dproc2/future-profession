@@ -4,214 +4,38 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Մասնագիտական կողմնորոշման թեստ</title>
-
-<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-<circle cx="50" cy="50" r="30" fill="%234f46e5"/>
-<ellipse cx="50" cy="50" rx="45" ry="15" fill="none" stroke="%23facc15" stroke-width="5"/>
-</svg>'>
-
 <style>
 :root{
---bg:#0f172a;
---card:#1e293b;
---text:white;
---accent:#38bdf8;
---progressbg:#334155;
---yes:#22c55e;
---no:#ef4444;
---bar-bg:#334155;
+--bg:#0f172a; --card:#1e293b; --text:white; --accent:#38bdf8; --progressbg:#334155; --yes:#22c55e; --no:#ef4444; --bar-bg:#334155;
 }
-
 .light{
---bg:#f1f5f9;
---card:white;
---text:#0f172a;
---accent:#2563eb;
---progressbg:#cbd5e1;
---yes:#16a34a;
---no:#dc2626;
---bar-bg:#cbd5e1;
+--bg:#f1f5f9; --card:white; --text:#0f172a; --accent:#2563eb; --progressbg:#cbd5e1; --yes:#16a34a; --no:#dc2626; --bar-bg:#cbd5e1;
 }
-
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
-
-body{
-background:var(--bg);
-color:var(--text);
-min-height:100vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-padding:40px 20px;
-transition:0.3s;
-}
-
-h1{
-font-size:48px;
-margin-bottom:10px;
-text-align:center;
-cursor:pointer;
-padding:12px 25px;
-border-radius:12px;
-position:relative;
-}
-
-h1::after{
-content:'';
-display:block;
-width:60%;
-height:4px;
-margin:10px auto 0;
-background:linear-gradient(90deg,var(--accent),transparent);
-border-radius:2px;
-}
-
-.toggle{
-margin-bottom:20px;
-cursor:pointer;
-padding:8px 18px;
-border-radius:8px;
-background:var(--accent);
-color:white;
-border:none;
-font-size:15px;
-}
-
-.progress-container{
-width:100%;
-max-width:1000px;
-height:14px;
-background:var(--progressbg);
-border-radius:10px;
-margin-bottom:25px;
-overflow:hidden;
-}
-
-.progress{
-height:100%;
-width:0%;
-background:var(--accent);
-transition:0.4s;
-}
-
-.stage{
-position:relative;
-width:100%;
-max-width:800px;
-min-height:300px;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.card{
-position:absolute;
-width:100%;
-padding:30px;
-background:var(--card);
-border-radius:20px;
-box-shadow:0 15px 50px rgba(0,0,0,0.5);
-transition:0.5s ease, transform 0.5s ease, opacity 0.5s ease;
-opacity:1;
-}
-
-.card.hidden{
-opacity:0;
-transform:translateY(20px);
-pointer-events:none;
-}
-
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px;transition:0.3s;}
+h1{text-align:center;font-size:48px;margin-bottom:10px;cursor:pointer;padding:12px 25px;border-radius:12px;position:relative;}
+h1::after{content:'';display:block;width:60%;height:4px;margin:10px auto 0;background:linear-gradient(90deg,var(--accent),transparent);border-radius:2px;}
+.toggle{margin-bottom:20px;cursor:pointer;padding:8px 18px;border-radius:8px;background:var(--accent);color:white;border:none;font-size:15px;}
+.progress-container{width:100%;max-width:1000px;height:14px;background:var(--progressbg);border-radius:10px;margin-bottom:25px;overflow:hidden;}
+.progress{height:100%;width:0%;background:var(--accent);transition:0.4s;}
+.stage{position:relative;width:100%;max-width:800px;min-height:300px;display:flex;align-items:center;justify-content:center;}
+.card{position:absolute;width:100%;padding:30px;background:var(--card);border-radius:20px;box-shadow:0 15px 50px rgba(0,0,0,0.5);transition:0.5s ease, transform 0.5s ease, opacity 0.5s ease;opacity:1;}
+.card.hidden{opacity:0;transform:translateY(20px);pointer-events:none;}
 .q-text{font-size:22px;margin-bottom:25px;}
 .yesno{display:flex;gap:20px;}
-.btn-yn{
-flex:1;
-padding:18px;
-border:none;
-border-radius:12px;
-font-size:16px;
-font-weight:700;
-cursor:pointer;
-transition:0.2s;
-}
+.btn-yn{flex:1;padding:18px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:0.2s;}
 .btn-yes{background:var(--yes); color:white;}
 .btn-no{background:var(--no); color:white;}
-
-.result-container{
-display:none;
-width:100%;
-max-width:700px;
-margin-top:30px;
-text-align:center;
-}
-
-.bar-wrapper{
-margin:10px 0;
-background:var(--bar-bg);
-border-radius:12px;
-overflow:hidden;
-height:40px;
-position:relative;
-}
-
-.bar{
-height:100%;
-width:0;
-border-radius:12px;
-transition:width 1s ease;
-position:absolute;
-left:0; top:0;
-display:flex;
-align-items:center;
-justify-content:flex-end;
-padding-right:10px;
-font-weight:700;
-color:white;
-font-size:16px;
-background:linear-gradient(90deg,#38bdf8,#22c55e,#facc15);
-}
-
-.bar-label{
-position:absolute;
-left:15px;
-top:50%;
-transform:translateY(-50%);
-font-weight:600;
-color:var(--text);
-}
-
-.bar-value{
-position:absolute;
-right:10px;
-top:50%;
-transform:translateY(-50%);
-font-weight:700;
-color:white;
-}
-
-.info-line{
-margin-top:40px;
-font-size:20px;
-font-weight:700;
-color:var(--accent);
-}
-
-footer{
-margin-top:50px;
-text-align:center;
-font-size:16px;
-opacity:0.8;
-}
-
-@media (max-width:720px){
-.stage{min-height:400px;}
-.btn-yn{padding:14px;font-size:15px;}
-.q-text{font-size:20px;}
-.bar{font-size:14px;padding-right:8px;}
-}
+.result-container{display:none;width:100%;max-width:700px;margin-top:30px;text-align:center;}
+.bar-wrapper{margin:10px 0;background:var(--bar-bg);border-radius:12px;overflow:hidden;height:40px;position:relative;}
+.bar{height:100%;width:0;border-radius:12px;transition:width 1s ease;display:flex;align-items:center;padding-left:15px;font-weight:600;color:white;background:linear-gradient(90deg,#38bdf8,#22c55e,#facc15);}
+.bar-label{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-weight:600;color:var(--text);}
+.bar-value{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-weight:700;color:white;}
+.info-line{margin-top:40px;font-size:20px;font-weight:700;color:var(--accent);}
+footer{margin-top:50px;text-align:center;font-size:16px;opacity:0.8;}
+@media (max-width:720px){.stage{min-height:400px;}.btn-yn{padding:14px;font-size:15px;}.q-text{font-size:20px;}.bar{font-size:14px;padding-left:10px;}}
 </style>
 </head>
-
 <body>
 
 <h1 onclick="resetTest()">Մասնագիտական կողմնորոշման թեստ</h1>
@@ -234,6 +58,7 @@ opacity:0.8;
 </footer>
 
 <script>
+// Հարցեր և մասնագիտություններ
 const questions=[
 {q:'Դու հաճույքով լուծու՞մ ես տրամաբանական խնդիրներ', map:{IT:2,Engineering:1,Research:1}},
 {q:'Սիրու՞մ ես ստեղծագործել՝ նկարել, դիզայն անել կամ երաժշտությամբ զբաղվել', map:{Art:3,Design:2,Media:1}},
@@ -266,7 +91,6 @@ SocialWork:'Սոցիալական աշխատանք',Medicine:'Բժշկությո�
 
 let state={scores:{}};
 Object.keys(careers).forEach(k=> state.scores[k]=0);
-
 const stage=document.getElementById('stage');
 
 function createCard(i){
@@ -286,10 +110,7 @@ card.querySelector('.btn-no').onclick=()=>answer(i,false);
 return card;
 }
 
-function render(){
-stage.innerHTML='';
-for(let i=0;i<questions.length;i++) stage.appendChild(createCard(i));
-}
+function render(){stage.innerHTML='';for(let i=0;i<questions.length;i++) stage.appendChild(createCard(i));}
 
 function answer(i,yes){
 if(yes){for(const k in questions[i].map) state.scores[k]+=questions[i].map[k];}
@@ -299,41 +120,23 @@ if(i+1<questions.length) showCard(i+1); else showResults();
 function showCard(i){
 document.querySelectorAll('.card').forEach(c=>c.classList.add('hidden'));
 stage.children[i].classList.remove('hidden');
-let percent=((i+1)/questions.length)*100;
-document.getElementById('progress').style.width=percent+'%';
+document.getElementById('progress').style.width=((i+1)/questions.length*100)+'%';
 }
 
 function showResults(){
 let arr=Object.entries(state.scores).map(([k,v])=>({k,v,name:careers[k]}));
 arr.sort((a,b)=>b.v-a.v);
-let maxScore=arr[0].v || 1;
-const barsContainer=document.getElementById('barsContainer');
-barsContainer.innerHTML='';
-arr.slice(0,3).forEach(t=>{
-const wrapper=document.createElement('div');
-wrapper.className='bar-wrapper';
-
-const label=document.createElement('div');
-label.className='bar-label';
-label.innerText=t.name;
-wrapper.appendChild(label);
-
-const bar=document.createElement('div');
-bar.className='bar';
-wrapper.appendChild(bar);
-
-const value=document.createElement('div');
-value.className='bar-value';
-value.innerText=t.v;
-wrapper.appendChild(value);
-
-barsContainer.appendChild(wrapper);
-
-setTimeout(()=>{
-bar.style.width=(t.v/maxScore*100)+'%';
-},50);
+let maxScore=Math.max(...arr.map(a=>a.v),1);
+const container=document.getElementById('barsContainer');
+container.innerHTML='';
+arr.slice(0,5).forEach(t=>{
+const wrapper=document.createElement('div'); wrapper.className='bar-wrapper';
+const label=document.createElement('div'); label.className='bar-label'; label.innerText=t.name; wrapper.appendChild(label);
+const bar=document.createElement('div'); bar.className='bar'; wrapper.appendChild(bar);
+const value=document.createElement('div'); value.className='bar-value'; value.innerText=t.v; wrapper.appendChild(value);
+container.appendChild(wrapper);
+setTimeout(()=>{bar.style.width=(t.v/maxScore*100)+'%';},50);
 });
-
 stage.style.display='none';
 document.getElementById('resultContainer').style.display='block';
 }
@@ -341,8 +144,7 @@ document.getElementById('resultContainer').style.display='block';
 function resetTest(){
 state={scores:{}};
 Object.keys(careers).forEach(k=> state.scores[k]=0);
-render();
-showCard(0);
+render(); showCard(0);
 stage.style.display='flex';
 document.getElementById('resultContainer').style.display='none';
 document.getElementById('progress').style.width='0%';
@@ -350,9 +152,7 @@ window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function toggleMode(){document.body.classList.toggle('light');}
-
 render();
 </script>
-
 </body>
 </html>
