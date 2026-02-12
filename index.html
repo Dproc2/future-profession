@@ -21,7 +21,6 @@
 --yes:#22c55e;
 --no:#ef4444;
 --bar-bg:#334155;
---bar:#38bdf8;
 }
 
 .light{
@@ -33,7 +32,6 @@
 --yes:#16a34a;
 --no:#dc2626;
 --bar-bg:#cbd5e1;
---bar:#2563eb;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
@@ -159,7 +157,6 @@ position:relative;
 .bar{
 height:100%;
 width:0;
-background:var(--bar);
 border-radius:12px;
 transition:width 1s ease;
 position:absolute;
@@ -171,6 +168,7 @@ padding-right:10px;
 font-weight:700;
 color:white;
 font-size:16px;
+background:linear-gradient(90deg,#38bdf8,#22c55e,#facc15);
 }
 
 .bar-label{
@@ -227,6 +225,7 @@ opacity:0.8;
 </footer>
 
 <script>
+// Հարցեր և մասնագիտություններ
 const questions=[
 {q:'Դու հաճույքով լուծու՞մ ես տրամաբանական խնդիրներ', map:{IT:2,Engineering:1,Research:1}},
 {q:'Սիրու՞մ ես ստեղծագործել՝ նկարել, դիզայն անել կամ երաժշտությամբ զբաղվել', map:{Art:3,Design:2,Media:1}},
@@ -299,10 +298,10 @@ document.getElementById('progress').style.width=percent+'%';
 function showResults(){
 let arr=Object.entries(state.scores).map(([k,v])=>({k,v,name:careers[k]}));
 arr.sort((a,b)=>b.v-a.v);
-let top=arr.slice(0,3);
+let maxScore=arr[0].v || 1; // ապահովում է հարաբերականություն
 const barsContainer=document.getElementById('barsContainer');
 barsContainer.innerHTML='';
-top.forEach(t=>{
+arr.slice(0,3).forEach(t=>{
 const wrapper=document.createElement('div');
 wrapper.className='bar-wrapper';
 const bar=document.createElement('div');
@@ -315,7 +314,8 @@ label.innerText=t.name;
 wrapper.appendChild(label);
 wrapper.appendChild(bar);
 barsContainer.appendChild(wrapper);
-setTimeout(()=>{bar.style.width=(t.v*20)+'%';},50);
+// proportional width: (score/maxScore*100)%
+setTimeout(()=>{bar.style.width=(t.v/maxScore*100)+'%';},50);
 });
 stage.style.display='none';
 document.getElementById('resultContainer').style.display='block';
