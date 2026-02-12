@@ -150,7 +150,7 @@ margin:10px 0;
 background:var(--bar-bg);
 border-radius:12px;
 overflow:hidden;
-height:30px;
+height:40px;
 position:relative;
 }
 
@@ -163,7 +163,7 @@ position:absolute;
 left:0; top:0;
 display:flex;
 align-items:center;
-justify-content:right;
+justify-content:flex-end;
 padding-right:10px;
 font-weight:700;
 color:white;
@@ -178,6 +178,15 @@ top:50%;
 transform:translateY(-50%);
 font-weight:600;
 color:var(--text);
+}
+
+.bar-value{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+font-weight:700;
+color:white;
 }
 
 .info-line{
@@ -225,7 +234,6 @@ opacity:0.8;
 </footer>
 
 <script>
-// Հարցեր և մասնագիտություններ
 const questions=[
 {q:'Դու հաճույքով լուծու՞մ ես տրամաբանական խնդիրներ', map:{IT:2,Engineering:1,Research:1}},
 {q:'Սիրու՞մ ես ստեղծագործել՝ նկարել, դիզայն անել կամ երաժշտությամբ զբաղվել', map:{Art:3,Design:2,Media:1}},
@@ -298,25 +306,34 @@ document.getElementById('progress').style.width=percent+'%';
 function showResults(){
 let arr=Object.entries(state.scores).map(([k,v])=>({k,v,name:careers[k]}));
 arr.sort((a,b)=>b.v-a.v);
-let maxScore=arr[0].v || 1; // ապահովում է հարաբերականություն
+let maxScore=arr[0].v || 1;
 const barsContainer=document.getElementById('barsContainer');
 barsContainer.innerHTML='';
 arr.slice(0,3).forEach(t=>{
 const wrapper=document.createElement('div');
 wrapper.className='bar-wrapper';
-const bar=document.createElement('div');
-bar.className='bar';
-bar.style.width='0';
-bar.innerText=t.v;
+
 const label=document.createElement('div');
 label.className='bar-label';
 label.innerText=t.name;
 wrapper.appendChild(label);
+
+const bar=document.createElement('div');
+bar.className='bar';
 wrapper.appendChild(bar);
+
+const value=document.createElement('div');
+value.className='bar-value';
+value.innerText=t.v;
+wrapper.appendChild(value);
+
 barsContainer.appendChild(wrapper);
-// proportional width: (score/maxScore*100)%
-setTimeout(()=>{bar.style.width=(t.v/maxScore*100)+'%';},50);
+
+setTimeout(()=>{
+bar.style.width=(t.v/maxScore*100)+'%';
+},50);
 });
+
 stage.style.display='none';
 document.getElementById('resultContainer').style.display='block';
 }
