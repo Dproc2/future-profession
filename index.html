@@ -1,298 +1,233 @@
 <!DOCTYPE html>
 <html lang="hy">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Մասնագիտական կողմնորոշման թեստ</title>
 
+<!-- Favicon (Planet SVG) -->
+<link rel="icon" type="image/svg+xml" href='data:image/svg+xml,
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<circle cx="50" cy="50" r="30" fill="%234f46e5"/>
+<ellipse cx="50" cy="50" rx="45" ry="15" fill="none" stroke="%23facc15" stroke-width="5"/>
+</svg>'>
+
 <style>
-:root{
-  --bg1:#667eea;
-  --bg2:#764ba2;
-  --accent:#ff6b6b;
-  --accent2:#feca57;
-  --accent3:#1dd1a1;
-  --card:#ffffff;
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
 }
 
-*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:Inter,system-ui;
-  background:linear-gradient(135deg,var(--bg1),var(--bg2));
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
-  padding:30px;
-}
-
-.frame{
-  width:100%;
-  max-width:1100px;
-  background:rgba(255,255,255,0.97);
-  border-radius:25px;
-  box-shadow:0 30px 80px rgba(0,0,0,0.2);
-  overflow:hidden;
-}
-
-header{
-  text-align:center;
-  padding:60px 30px;
-  background:linear-gradient(120deg,#ffffff,#f3f4ff);
+background:linear-gradient(135deg,#0f172a,#1e293b);
+color:white;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+align-items:center;
+padding:40px 20px;
 }
 
 h1{
-  font-size:48px;
-  margin:0;
-  font-weight:900;
-  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:fadeIn 1.2s ease;
+font-size:48px;
+margin-bottom:30px;
+text-align:center;
+cursor:pointer;
+padding:10px 25px;
+border:3px solid #38bdf8;
+border-radius:12px;
+transition:0.3s;
 }
 
-.lead{
-  margin-top:20px;
-  font-size:18px;
-  color:#444;
+h1:hover{
+background:#38bdf8;
+color:#0f172a;
 }
 
-.stage{
-  padding:40px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:500px;
-}
-
-.card{
-  width:100%;
-  max-width:750px;
-  background:var(--card);
-  border-radius:18px;
-  padding:35px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.12);
-  transition:0.4s;
+.container{
+background:#1e293b;
+padding:30px;
+border-radius:18px;
+box-shadow:0 15px 40px rgba(0,0,0,0.6);
+max-width:900px;
+width:100%;
+animation:fadeIn 1s ease;
 }
 
 .question{
-  font-size:24px;
-  font-weight:600;
-  margin-bottom:25px;
+margin-bottom:20px;
+font-size:20px;
 }
 
-.buttons{
-  display:flex;
-  gap:20px;
+select{
+width:100%;
+padding:10px;
+border-radius:10px;
+border:none;
+margin-top:8px;
+font-size:16px;
 }
 
 button{
-  flex:1;
-  padding:18px;
-  font-size:18px;
-  border:none;
-  border-radius:12px;
-  cursor:pointer;
-  font-weight:700;
-  transition:0.2s;
-}
-
-.yes{
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  color:white;
-}
-
-.no{
-  background:#f1f2f6;
+margin-top:25px;
+padding:12px 25px;
+font-size:18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+background:#38bdf8;
+color:#0f172a;
+transition:0.3s;
 }
 
 button:hover{
-  transform:translateY(-5px);
+background:#0ea5e9;
 }
 
-.progress{
-  margin-top:25px;
-  height:12px;
-  background:#eee;
-  border-radius:20px;
-  overflow:hidden;
-}
-
-.progress div{
-  height:100%;
-  background:linear-gradient(90deg,var(--accent),var(--accent3));
-  width:0%;
-  transition:0.4s;
-}
-
-.result-title{
-  font-size:26px;
-  font-weight:800;
-  margin-bottom:20px;
-}
-
-.result-item{
-  padding:12px;
-  margin-bottom:10px;
-  border-radius:10px;
-  background:#f8f9ff;
-  display:flex;
-  justify-content:space-between;
+.result{
+margin-top:25px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
 }
 
 footer{
-  text-align:center;
-  padding:20px;
-  font-size:14px;
-  color:#666;
+margin-top:40px;
+text-align:center;
+font-size:16px;
+opacity:0.8;
 }
 
 @keyframes fadeIn{
-  from{opacity:0;transform:translateY(-20px)}
-  to{opacity:1;transform:translateY(0)}
-}
-
-@media(max-width:768px){
-  h1{font-size:32px}
-  .buttons{flex-direction:column}
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
 
 <body>
 
-<div class="frame">
+<h1 onclick="resetTest()">Մասնագիտական կողմնորոշման թեստ</h1>
 
-<header>
-<h1>ԻՄ ԱՊԱԳԱ ՄԱՍՆԱԳԻՏՈՒԹՅՈՒՆԸ 🚀</h1>
-<p class="lead">Պատասխանիր 25 հարցերին և ստացիր քո լավագույն մասնագիտական ուղղությունները</p>
-</header>
+<div class="container">
 
-<div class="stage" id="stage"></div>
+<div class="question">
+1. Ո՞ր առարկան եք ավելի շատ սիրում
+<select id="q1">
+<option value="">Ընտրեք</option>
+<option value="tech">Ինֆորմատիկա</option>
+<option value="med">Կենսաբանություն</option>
+<option value="art">Գրականություն</option>
+<option value="biz">Մաթեմատիկա</option>
+</select>
+</div>
+
+<div class="question">
+2. Ինչպիսի՞ աշխատանք եք նախընտրում
+<select id="q2">
+<option value="">Ընտրեք</option>
+<option value="tech">Համակարգչով</option>
+<option value="med">Մարդկանց օգնել</option>
+<option value="art">Ստեղծագործական</option>
+<option value="biz">Կառավարում</option>
+</select>
+</div>
+
+<div class="question">
+3. Ազատ ժամանակ ինչո՞վ եք զբաղվում
+<select id="q3">
+<option value="">Ընտրեք</option>
+<option value="tech">Ծրագրավորում</option>
+<option value="med">Բժշկական թեմաներ</option>
+<option value="art">Նկարել/գրել</option>
+<option value="biz">Բիզնես գաղափարներ</option>
+</select>
+</div>
+
+<div class="question">
+4. Ինչպիսի՞ միջավայր եք նախընտրում
+<select id="q4">
+<option value="">Ընտրեք</option>
+<option value="tech">Տեխնոլոգիական</option>
+<option value="med">Հիվանդանոց</option>
+<option value="art">Ստուդիա</option>
+<option value="biz">Գրասենյակ</option>
+</select>
+</div>
+
+<div class="question">
+5. Ո՞ր հմտությունն եք գնահատում
+<select id="q5">
+<option value="">Ընտրեք</option>
+<option value="tech">Վերլուծական մտածողություն</option>
+<option value="med">Հոգատարություն</option>
+<option value="art">Ստեղծարարություն</option>
+<option value="biz">Առաջնորդություն</option>
+</select>
+</div>
+
+<button onclick="calculate()">Տեսնել արդյունքը</button>
+
+<div class="result" id="result"></div>
+
+</div>
 
 <footer>
-Թեստը կրում է կրթական և կողմնորոշիչ բնույթ © 2026
+© 2026  
+Նախագծային աշխատանք
 </footer>
 
-</div>
-
 <script>
-
-const questions = [
-{q:"Սիրու՞մ ես ծրագրավորում կամ տեխնոլոգիա", map:{IT:3,Data:2,Cyber:2}},
-{q:"Հաճույք ես ստանում նկարելուց կամ դիզայնից", map:{Design:3,Art:3,Media:2}},
-{q:"Սիրու՞մ ես մարդկանց օգնել", map:{Medicine:3,Teaching:2,Social:2}},
-{q:"Թվերը քեզ դուր գալի՞ս են", map:{Finance:3,Data:2}},
-{q:"Սիրու՞մ ես սարքեր քանդել/հավաքել", map:{Engineering:3,IT:1}},
-{q:"Հետաքրքրվա՞ծ ես գիտությամբ", map:{Science:3,Research:3}},
-{q:"Կուզե՞ս ղեկավար լինել", map:{Business:3,Management:2}},
-{q:"Սիրու՞մ ես գրել կամ խոսել հանրության առաջ", map:{Media:3,Law:2}},
-{q:"Սիրու՞մ ես բնությունը", map:{Agriculture:3,Ecology:3}},
-{q:"Սիրու՞մ ես հաշվարկել ռիսկերը", map:{Finance:2,Law:2}},
-{q:"Հետաքրքրվա՞ծ ես բժշկությամբ", map:{Medicine:3}},
-{q:"Սիրու՞մ ես դասավանդել", map:{Teaching:3}},
-{q:"Կուզե՞ս ստեղծել խաղեր", map:{IT:2,Design:2}},
-{q:"Հետաքրքրվա՞ծ ես իրավաբանությամբ", map:{Law:3}},
-{q:"Սիրու՞մ ես փորձարկումներ անել", map:{Research:3,Science:2}},
-{q:"Սիրու՞մ ես տեսահոլովակներ պատրաստել", map:{Media:3}},
-{q:"Կուզե՞ս սեփական բիզնես ունենալ", map:{Business:3}},
-{q:"Սիրու՞մ ես անվտանգություն/հաքերություն թեման", map:{Cyber:3}},
-{q:"Սիրու՞մ ես տվյալների վերլուծություն", map:{Data:3}},
-{q:"Սիրու՞մ ես շինարարություն", map:{Engineering:3}},
-{q:"Հետաքրքրվա՞ծ ես հոգեբանությամբ", map:{Psychology:3}},
-{q:"Սիրու՞մ ես միջազգային հարաբերություններ", map:{Law:2,Management:2}},
-{q:"Սիրու՞մ ես բույսեր աճեցնել", map:{Agriculture:3}},
-{q:"Սիրու՞մ ես արվեստի պատմություն", map:{Art:2}},
-{q:"Կուզե՞ս աշխատել լաբորատորիայում", map:{Science:3,Medicine:2}}
+function calculate(){
+let answers=[
+document.getElementById("q1").value,
+document.getElementById("q2").value,
+document.getElementById("q3").value,
+document.getElementById("q4").value,
+document.getElementById("q5").value
 ];
 
-const careers = {
-IT:"ՏՏ / Ծրագրավորում",
-Data:"Տվյալագիտություն",
-Cyber:"Կիբեռանվտանգություն",
-Design:"Դիզայն",
-Art:"Արվեստ",
-Media:"Մեդիա / Մարքեթինգ",
-Medicine:"Բժշկություն",
-Teaching:"Ուսուցում",
-Social:"Սոցիալական աշխատանք",
-Finance:"Ֆինանսներ",
-Engineering:"Ինժեներիա",
-Science:"Գիտություն",
-Research:"Հետազոտություն",
-Business:"Բիզնես",
-Management:"Մենեջմենթ",
-Law:"Իրավաբանություն",
-Agriculture:"Գյուղատնտեսություն",
-Ecology:"Էկոլոգիա",
-Psychology:"Հոգեբանություն"
+if(answers.includes("")){
+document.getElementById("result").innerText="Խնդրում ենք պատասխանել բոլոր հարցերին։";
+return;
+}
+
+let count={
+tech:0,
+med:0,
+art:0,
+biz:0
 };
 
-let scores={};
-Object.keys(careers).forEach(k=>scores[k]=0);
+answers.forEach(a=>count[a]++);
 
-let current=0;
-const stage=document.getElementById("stage");
+let max=Math.max(...Object.values(count));
+let profession="";
 
-function renderQuestion(){
-stage.innerHTML="";
-const q=questions[current];
-
-const card=document.createElement("div");
-card.className="card";
-
-card.innerHTML=`
-<div class="question">${current+1}/${questions.length} — ${q.q}</div>
-<div class="buttons">
-<button class="yes">Այո</button>
-<button class="no">Ոչ</button>
-</div>
-<div class="progress"><div style="width:${(current/questions.length)*100}%"></div></div>
-`;
-
-card.querySelector(".yes").onclick=()=>answer(true);
-card.querySelector(".no").onclick=()=>answer(false);
-
-stage.appendChild(card);
+if(count.tech===max){
+profession="Ձեզ համապատասխանում են՝ Ծրագրավորող, Վեբ դիզայներ, Կիբերանվտանգության մասնագետ, Տվյալագետ։";
+}
+else if(count.med===max){
+profession="Ձեզ համապատասխանում են՝ Բժիշկ, Դեղագործ, Հոգեբան, Բուժքույր։";
+}
+else if(count.art===max){
+profession="Ձեզ համապատասխանում են՝ Գրող, Նկարիչ, Դիզայներ, Լրագրող։";
+}
+else{
+profession="Ձեզ համապատասխանում են՝ Բիզնես մենեջեր, Տնտեսագետ, Մարքեթոլոգ, Նախագծերի ղեկավար։";
 }
 
-function answer(val){
-if(val){
-for(let k in questions[current].map){
-scores[k]+=questions[current].map[k];
-}
-}
-current++;
-if(current<questions.length){
-renderQuestion();
-}else{
-showResults();
-}
+document.getElementById("result").innerText=profession;
 }
 
-function showResults(){
-stage.innerHTML="";
-let arr=Object.entries(scores).map(([k,v])=>({name:careers[k],score:v}));
-arr.sort((a,b)=>b.score-a.score);
-
-const card=document.createElement("div");
-card.className="card";
-
-let html=`<div class="result-title">Քո լավագույն մասնագիտությունները</div>`;
-
-arr.forEach((item,i)=>{
-html+=`<div class="result-item"><div>${i+1}. ${item.name}</div><div>${item.score} միավոր</div></div>`;
-});
-
-html+=`<button class="yes" onclick="location.reload()">Կրկնել թեստը</button>`;
-
-card.innerHTML=html;
-stage.appendChild(card);
+function resetTest(){
+document.querySelectorAll("select").forEach(s=>s.value="");
+document.getElementById("result").innerText="";
+window.scrollTo({top:0,behavior:"smooth"});
 }
-
-renderQuestion();
-
 </script>
 
 </body>
