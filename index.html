@@ -3,10 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Մասնագիտական կողմնորոշման թեստ</title>
 
-<!-- Favicon (Planet SVG) -->
 <link rel="icon" type="image/svg+xml" href='data:image/svg+xml,
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
 <circle cx="50" cy="50" r="30" fill="%234f46e5"/>
@@ -14,53 +12,87 @@
 </svg>'>
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Segoe UI',sans-serif;
+:root{
+--bg:#0f172a;
+--card:#1e293b;
+--text:white;
+--accent:#38bdf8;
+--progressbg:#334155;
 }
 
+.light{
+--bg:#f1f5f9;
+--card:white;
+--text:#0f172a;
+--accent:#2563eb;
+--progressbg:#cbd5e1;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI;}
+
 body{
-background:linear-gradient(135deg,#0f172a,#1e293b);
-color:white;
+background:var(--bg);
+color:var(--text);
 min-height:100vh;
 display:flex;
 flex-direction:column;
 align-items:center;
 padding:40px 20px;
+transition:0.3s;
 }
 
 h1{
 font-size:48px;
-margin-bottom:30px;
+margin-bottom:20px;
 text-align:center;
 cursor:pointer;
-padding:10px 25px;
-border:3px solid #38bdf8;
+padding:12px 25px;
+border:3px solid var(--accent);
 border-radius:12px;
 transition:0.3s;
 }
 
-h1:hover{
-background:#38bdf8;
-color:#0f172a;
+h1:hover{background:var(--accent);color:white;}
+
+.toggle{
+margin-bottom:20px;
+cursor:pointer;
+padding:8px 18px;
+border-radius:8px;
+background:var(--accent);
+color:white;
+border:none;
+font-size:15px;
+}
+
+.progress-container{
+width:100%;
+max-width:1000px;
+height:14px;
+background:var(--progressbg);
+border-radius:10px;
+margin-bottom:25px;
+overflow:hidden;
+}
+
+.progress{
+height:100%;
+width:0%;
+background:var(--accent);
+transition:0.4s;
 }
 
 .container{
-background:#1e293b;
-padding:30px;
-border-radius:18px;
-box-shadow:0 15px 40px rgba(0,0,0,0.6);
-max-width:900px;
+background:var(--card);
+padding:35px;
+border-radius:20px;
+box-shadow:0 20px 50px rgba(0,0,0,0.5);
+max-width:1000px;
 width:100%;
 animation:fadeIn 1s ease;
 }
 
-.question{
-margin-bottom:20px;
-font-size:20px;
-}
+.question{margin-bottom:22px;font-size:18px;}
 
 select{
 width:100%;
@@ -68,111 +100,166 @@ padding:10px;
 border-radius:10px;
 border:none;
 margin-top:8px;
-font-size:16px;
+font-size:15px;
 }
 
 button{
 margin-top:25px;
-padding:12px 25px;
+padding:14px 30px;
 font-size:18px;
 border:none;
-border-radius:10px;
+border-radius:12px;
 cursor:pointer;
-background:#38bdf8;
-color:#0f172a;
+background:var(--accent);
+color:white;
 transition:0.3s;
 }
 
-button:hover{
-background:#0ea5e9;
+button:hover{opacity:0.85;}
+
+.result-container{
+margin-top:30px;
+text-align:center;
+display:none;
 }
 
-.result{
-margin-top:25px;
-font-size:22px;
-font-weight:bold;
-text-align:center;
-}
+.result{font-size:20px;font-weight:bold;line-height:1.6;}
 
-footer{
-margin-top:40px;
-text-align:center;
-font-size:16px;
-opacity:0.8;
-}
+#chartContainer{max-width:700px;margin:30px auto;}
+
+footer{margin-top:50px;text-align:center;font-size:16px;opacity:0.8;}
 
 @keyframes fadeIn{
-from{opacity:0; transform:translateY(20px);}
-to{opacity:1; transform:translateY(0);}
+from{opacity:0;transform:translateY(25px);}
+to{opacity:1;transform:translateY(0);}
 }
 </style>
-</head>
 
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- jsPDF CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
 <body>
 
 <h1 onclick="resetTest()">Մասնագիտական կողմնորոշման թեստ</h1>
 
-<div class="container">
+<button class="toggle" onclick="toggleMode()">Փոխել ռեժիմը</button>
 
-<div class="question">
-1. Ո՞ր առարկան եք ավելի շատ սիրում
-<select id="q1">
+<div class="progress-container">
+<div class="progress" id="progress"></div>
+</div>
+
+<div class="container" id="quizContainer">
+
+<!-- 10 հարց -->
+<div class="question">1. Սիրելի առարկա
+<select onchange="updateProgress()" class="q">
 <option value="">Ընտրեք</option>
 <option value="tech">Ինֆորմատիկա</option>
+<option value="tech">Ֆիզիկա</option>
+<option value="tech">Ռոբոտատեխնիկա</option>
 <option value="med">Կենսաբանություն</option>
+<option value="med">Քիմիա</option>
 <option value="art">Գրականություն</option>
+<option value="art">Երաժշտություն</option>
 <option value="biz">Մաթեմատիկա</option>
-</select>
-</div>
+<option value="biz">Տնտեսագիտություն</option>
+</select></div>
 
-<div class="question">
-2. Ինչպիսի՞ աշխատանք եք նախընտրում
-<select id="q2">
-<option value="">Ընտրեք</option>
-<option value="tech">Համակարգչով</option>
-<option value="med">Մարդկանց օգնել</option>
-<option value="art">Ստեղծագործական</option>
-<option value="biz">Կառավարում</option>
-</select>
-</div>
-
-<div class="question">
-3. Ազատ ժամանակ ինչո՞վ եք զբաղվում
-<select id="q3">
+<div class="question">2. Նախընտրած գործունեություն
+<select onchange="updateProgress()" class="q">
 <option value="">Ընտրեք</option>
 <option value="tech">Ծրագրավորում</option>
-<option value="med">Բժշկական թեմաներ</option>
-<option value="art">Նկարել/գրել</option>
-<option value="biz">Բիզնես գաղափարներ</option>
-</select>
-</div>
+<option value="tech">Խաղերի մշակում</option>
+<option value="med">Մարդկանց բուժում</option>
+<option value="art">Դիզայն</option>
+<option value="biz">Բիզնես կառավարում</option>
+</select></div>
 
-<div class="question">
-4. Ինչպիսի՞ միջավայր եք նախընտրում
-<select id="q4">
+<div class="question">3. Որտեղ կուզենայիք աշխատել
+<select onchange="updateProgress()" class="q">
 <option value="">Ընտրեք</option>
-<option value="tech">Տեխնոլոգիական</option>
-<option value="med">Հիվանդանոց</option>
-<option value="art">Ստուդիա</option>
-<option value="biz">Գրասենյակ</option>
-</select>
-</div>
+<option value="tech">IT ընկերությունում</option>
+<option value="med">Հիվանդանոցում</option>
+<option value="art">Ստուդիայում</option>
+<option value="biz">Միջազգային կազմակերպությունում</option>
+</select></div>
 
-<div class="question">
-5. Ո՞ր հմտությունն եք գնահատում
-<select id="q5">
+<div class="question">4. Ձեր ուժեղ կողմը
+<select onchange="updateProgress()" class="q">
 <option value="">Ընտրեք</option>
-<option value="tech">Վերլուծական մտածողություն</option>
+<option value="tech">Վերլուծություն</option>
 <option value="med">Հոգատարություն</option>
 <option value="art">Ստեղծարարություն</option>
 <option value="biz">Առաջնորդություն</option>
-</select>
-</div>
+</select></div>
+
+<div class="question">5. Ինչն է ձեզ մոտիվացնում
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="tech">Նոր տեխնոլոգիաներ</option>
+<option value="med">Մարդկանց առողջություն</option>
+<option value="art">Արվեստ</option>
+<option value="biz">Ֆինանսական հաջողություն</option>
+</select></div>
+
+<div class="question">6. Սիրում եք թիմային աշխատանք
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="biz">Այո, ղեկավարել</option>
+<option value="med">Այո, աջակցել</option>
+<option value="tech">Միջին</option>
+<option value="art">Ավելի շատ միայնակ</option>
+</select></div>
+
+<div class="question">7. Նախընտրում եք
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="tech">Տեխնիկա</option>
+<option value="med">Մարդիկ</option>
+<option value="art">Ստեղծագործություն</option>
+<option value="biz">Ֆինանսներ</option>
+</select></div>
+
+<div class="question">8. Ձեր մտածողությունը
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="tech">Լոգիկական</option>
+<option value="med">Էմոցիոնալ</option>
+<option value="art">Ստեղծարար</option>
+<option value="biz">Ռազմավարական</option>
+</select></div>
+
+<div class="question">9. Ո՞ր ոլորտն է հետաքրքիր
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="tech">ԱԲ և ՏՏ</option>
+<option value="med">Բժշկություն</option>
+<option value="art">Արվեստ</option>
+<option value="biz">Բիզնես</option>
+</select></div>
+
+<div class="question">10. Ինչպիսի՞ արդյունք եք ուզում
+<select onchange="updateProgress()" class="q">
+<option value="">Ընտրեք</option>
+<option value="tech">Նորարարություն</option>
+<option value="med">Օգնություն մարդկանց</option>
+<option value="art">Գեղեցիկ ստեղծագործություն</option>
+<option value="biz">Բարձր եկամուտ</option>
+</select></div>
 
 <button onclick="calculate()">Տեսնել արդյունքը</button>
 
-<div class="result" id="result"></div>
+</div>
 
+<!-- Արդյունքի ցուցադրում -->
+<div class="result-container" id="resultContainer">
+<div class="result" id="resultText"></div>
+<div id="chartContainer"><canvas id="resultChart"></canvas></div>
+<button onclick="downloadPDF()">Ապահովել PDF վկայական</button>
+<button onclick="resetTest()">Նոր թեստ</button>
 </div>
 
 <footer>
@@ -180,53 +267,96 @@ to{opacity:1; transform:translateY(0);}
 Նախագծային աշխատանք
 </footer>
 
-<script>
-function calculate(){
-let answers=[
-document.getElementById("q1").value,
-document.getElementById("q2").value,
-document.getElementById("q3").value,
-document.getElementById("q4").value,
-document.getElementById("q5").value
-];
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-if(answers.includes("")){
-document.getElementById("result").innerText="Խնդրում ենք պատասխանել բոլոր հարցերին։";
-return;
+<script>
+function updateProgress(){
+let selects=document.querySelectorAll(".q");
+let filled=0;
+selects.forEach(s=>{if(s.value!=="") filled++;});
+let percent=(filled/selects.length)*100;
+document.getElementById("progress").style.width=percent+"%";
 }
 
-let count={
-tech:0,
-med:0,
-art:0,
-biz:0
+function calculate(){
+let selects=document.querySelectorAll(".q");
+let count={tech:0,med:0,art:0,biz:0};
+for(let s of selects){
+if(s.value===""){alert("Խնդրում ենք պատասխանել բոլոր հարցերին."); return;}
+count[s.value]++;
+}
+
+// Top professions
+let resultsText={
+tech:"Ձեզ համապատասխանում են՝ Ծրագրավորող, ԱԲ ինժեներ, Տվյալագետ, Կիբերանվտանգության մասնագետ, Ռոբոտաշինության ինժեներ։",
+med:"Ձեզ համապատասխանում են՝ Բժիշկ, Հոգեբան, Դեղագործ, Լաբորանտ, Ֆիզիոթերապևտ։",
+art:"Ձեզ համապատասխանում են՝ Դիզայներ, Գրող, Նկարիչ, Երաժիշտ, Լրագրող։",
+biz:"Ձեզ համապատասխանում են՝ Մենեջեր, Տնտեսագետ, Ֆինանսիստ, Մարքեթոլոգ, Իրավաբան։"
 };
 
-answers.forEach(a=>count[a]++);
+let maxCount=Math.max(...Object.values(count));
+let topCategory=Object.keys(count).find(k=>count[k]===maxCount);
+document.getElementById("resultText").innerText=resultsText[topCategory];
 
-let max=Math.max(...Object.values(count));
-let profession="";
+// Hide quiz, show results
+document.getElementById("quizContainer").style.display="none";
+document.getElementById("resultContainer").style.display="block";
 
-if(count.tech===max){
-profession="Ձեզ համապատասխանում են՝ Ծրագրավորող, Վեբ դիզայներ, Կիբերանվտանգության մասնագետ, Տվյալագետ։";
-}
-else if(count.med===max){
-profession="Ձեզ համապատասխանում են՝ Բժիշկ, Դեղագործ, Հոգեբան, Բուժքույր։";
-}
-else if(count.art===max){
-profession="Ձեզ համապատասխանում են՝ Գրող, Նկարիչ, Դիզայներ, Լրագրող։";
-}
-else{
-profession="Ձեզ համապատասխանում են՝ Բիզնես մենեջեր, Տնտեսագետ, Մարքեթոլոգ, Նախագծերի ղեկավար։";
+// Render chart
+renderChart(count);
 }
 
-document.getElementById("result").innerText=profession;
+let chartInstance;
+function renderChart(data){
+const ctx=document.getElementById("resultChart").getContext("2d");
+if(chartInstance) chartInstance.destroy();
+chartInstance=new Chart(ctx,{
+type:'bar',
+data:{
+labels:["Տեխնիկա","Բժշկություն","Արվեստ","Բիզնես"],
+datasets:[{
+label:"Մուտքագրված պատասխաններ",
+data:[data.tech,data.med,data.art,data.biz],
+backgroundColor:["#0ea5e9","#22c55e","#facc15","#f97316"]
+}]
+},
+options:{
+responsive:true,
+plugins:{
+legend:{display:false},
+title:{display:true,text:"Ձեր արդյունքների բաշխում"}
+},
+scales:{
+y:{beginAtZero:true,precision:0,stepSize:1}
+}
+}
+});
+}
+
+// PDF export
+function downloadPDF(){
+const { jsPDF } = window.jspdf;
+const doc=new jsPDF();
+doc.setFontSize(20);
+doc.text("Մասնագիտական կողմնորոշման թեստ",20,20);
+doc.setFontSize(16);
+doc.text(document.getElementById("resultText").innerText,20,40);
+doc.save("Certificate.pdf");
 }
 
 function resetTest(){
-document.querySelectorAll("select").forEach(s=>s.value="");
-document.getElementById("result").innerText="";
+document.querySelectorAll(".q").forEach(s=>s.value="");
+document.getElementById("resultText").innerText="";
+document.getElementById("progress").style.width="0%";
+document.getElementById("quizContainer").style.display="block";
+document.getElementById("resultContainer").style.display="none";
+if(chartInstance) chartInstance.destroy();
 window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function toggleMode(){
+document.body.classList.toggle("light");
 }
 </script>
 
